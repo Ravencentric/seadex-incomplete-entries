@@ -53,13 +53,7 @@ def get_entries_with_no_comps() -> tuple[Entry, ...]:
     results: list[Entry] = []
 
     with SeaDexEntry() as seadex_entry:
-        entries: list[EntryRecord] = []
-
-        for entry in seadex_entry.iterator():
-            if not any(
-                comp.startswith("https://slow.pics") for comp in entry.comparisons
-            ):
-                entries.append(entry)
+        entries: list[EntryRecord] = [entry for entry in seadex_entry.iterator() if entry.is_incomplete]
 
     with httpx.Client() as client:
         for batch in batched(entries, 50):
